@@ -1,14 +1,15 @@
-use serde::{Serialize, Deserialize};
-use uuid::Uuid;
 use chrono::prelude::*;
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
+use uuid::Uuid;
 
-#[derive(Eq, Debug, Hash, Serialize, Deserialize)]
+#[derive(Eq, Debug, Hash, Serialize, Deserialize, FromRow)]
 struct User {
     id: Uuid,
     role_id: Uuid,
     email: String,
     username: String,
-    auth_token: String,
+    auth_token: Option<String>,
     hash: String,
     modified: DateTime<Utc>,
     created: DateTime<Utc>,
@@ -30,4 +31,13 @@ impl Ord for User {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.id.cmp(&other.id)
     }
+}
+
+#[derive(Debug, Hash, Serialize, Deserialize)]
+struct NewUser {
+    role_id: Uuid,
+    email: String,
+    username: String,
+    auth_token: Option<String>,
+    hash: String,
 }
