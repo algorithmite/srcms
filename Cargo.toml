@@ -1,7 +1,7 @@
 [workspace]
 members = [
-    "server",
-    "client",
-    "data",
-    "macros"
+    "srcms-server",
+    "srcms-client",
+    "srcms-data",
+    "srcms-macros"
 ]
