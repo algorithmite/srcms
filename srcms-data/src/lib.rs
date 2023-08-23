@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
-#[derive(Eq, Debug, Hash, Serialize, Deserialize, FromRow)]
+#[derive(Eq, Debug, Serialize, Deserialize, FromRow)]
 struct User {
     id: Uuid,
     role_id: Uuid,
@@ -33,7 +33,7 @@ impl Ord for User {
     }
 }
 
-#[derive(Debug, Hash, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct NewUser {
     role_id: Uuid,
     email: String,
