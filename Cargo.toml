@@ -5,3 +5,10 @@ members = [
     "srcms-data",
     "srcms-macros"
 ]
+
+# For Zminimal-versions
+
+# cargo +nightly update -Zminimal-versions
+# cargo check
+# cargo tree --target all -i [erroring package]
+
