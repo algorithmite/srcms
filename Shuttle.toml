@@ -1,0 +1,3 @@
+assets = [
+  "srcms-server/static/*", # include all files and subdirs in static/
+]

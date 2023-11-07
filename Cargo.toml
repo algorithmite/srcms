@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
     "srcms-server",
     "srcms-client",
