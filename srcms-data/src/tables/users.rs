@@ -41,4 +41,3 @@ struct NewUser {
     auth_token: Option<String>,
     hash: String,
 }
-
