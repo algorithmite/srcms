@@ -7,10 +7,11 @@ edition = "2021"
 
 srcms-data = { path = "../srcms-data" }
 srcms-macros = { path = "../srcms-macros" }
+srcms-schema-sqlx = { path = "../srcms-schema-sqlx" }
 
 axum = "0.6"
 
-sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres"] }
+sqlx = { version = "0.7", features = ["runtime-tokio", "tls-native-tls", "postgres", "chrono", "uuid", "macros"] }
 tokio = { version = "1.28", features = ["full"] }
 tower-http = { version = "0.4.0", features = ["fs"] }
 

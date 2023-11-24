@@ -18,3 +18,5 @@ Secrets*.toml
 
 # Uneeded static files
 
+.sqlx/
+.env

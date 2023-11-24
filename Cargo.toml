@@ -4,6 +4,7 @@ members = [
     "srcms-server",
     "srcms-client",
     "srcms-data",
+    "srcms-schema-sqlx",
     "srcms-macros"
 ]
 

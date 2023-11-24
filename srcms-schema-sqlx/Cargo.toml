@@ -1,11 +1,16 @@
 [package]
-name = "srcms-data"
+name = "srcms-schema-sqlx"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 
+srcms-data = { path = "../srcms-data" }
 srcms-macros = { path = "../srcms-macros" }
+
+axum = "0.6"
+
+sqlx = { version = "0.7", features = ["runtime-tokio", "tls-native-tls", "postgres", "chrono", "uuid", "macros"] }
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"

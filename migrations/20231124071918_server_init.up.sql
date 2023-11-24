@@ -1,3 +1,4 @@
+-- Add up migration script here
 CREATE TYPE "content_type" AS ENUM('pages', 'files', 'sets');
 
 CREATE TYPE "content_reference_type" AS ENUM('link', 'embed', 'resource', 'download');
@@ -5,32 +6,21 @@ CREATE TYPE "content_reference_type" AS ENUM('link', 'embed', 'resource', 'downl
 CREATE TYPE "path_type" AS ENUM('root', 'library', 'page', 'misc');
 
 CREATE TABLE
-    "users" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "role_id" VARCHAR(40) REFERENCES "roles",
-        "email" VARCHAR,
-        "username" VARCHAR,
-        "auth_token" VARCHAR,
-        "hash" VARCHAR,
-        "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
-        "created" TIMESTAMP NOT NULL DEFAULT NOW(),
-        "deleted" TIMESTAMP
-    );
-
-CREATE TABLE
     "roles" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "display_name" VARCHAR,
+        "id" UUID PRIMARY KEY,
+        "display_name" VARCHAR NOT NULL,
         "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
         "created" TIMESTAMP NOT NULL DEFAULT NOW(),
         "deleted" TIMESTAMP
     );
 
 CREATE TABLE
-    "role_permissions" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "role_id" VARCHAR(40) REFERENCES "roles",
-        "permission_id" VARCHAR(40) REFERENCES "permissions",
+    "users" (
+        "id" UUID PRIMARY KEY,
+        "role_id" UUID NOT NULL REFERENCES "roles",
+        "email" VARCHAR NOT NULL,
+        "username" VARCHAR NOT NULL,
+        "hash" VARCHAR NOT NULL,
         "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
         "created" TIMESTAMP NOT NULL DEFAULT NOW(),
         "deleted" TIMESTAMP
@@ -38,8 +28,29 @@ CREATE TABLE
 
 CREATE TABLE
     "permissions" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "name" VARCHAR,
+        "id" UUID PRIMARY KEY,
+        "name" VARCHAR NOT NULL,
+        "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
+        "created" TIMESTAMP NOT NULL DEFAULT NOW(),
+        "deleted" TIMESTAMP
+    );
+
+CREATE TABLE
+    "role_permissions" (
+        "id" UUID PRIMARY KEY,
+        "role_id" UUID NOT NULL REFERENCES "roles",
+        "permission_id" UUID NOT NULL REFERENCES "permissions",
+        "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
+        "created" TIMESTAMP NOT NULL DEFAULT NOW(),
+        "deleted" TIMESTAMP
+    );
+
+CREATE TABLE
+    "paths" (
+        "id" UUID PRIMARY KEY,
+        "parent" UUID REFERENCES "paths",
+        "slug" VARCHAR NOT NULL,
+        "type" path_type NOT NULL DEFAULT 'misc',
         "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
         "created" TIMESTAMP NOT NULL DEFAULT NOW(),
         "deleted" TIMESTAMP
@@ -47,14 +58,14 @@ CREATE TABLE
 
 CREATE TABLE
     "content" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "type" content_type,
-        "author_id" VARCHAR(40) REFERENCES "users",
-        "path_id" VARCHAR(40) REFERENCES "paths",
-        "view_permission_key" VARCHAR(40) REFERENCES "permissions",
-        "comment_permission_key" VARCHAR(40) REFERENCES "permissions",
-        "edit_permission_key" VARCHAR(40) REFERENCES "permissions",
-        "commentable" BOOLEAN,
+        "id" UUID PRIMARY KEY,
+        "type" content_type NOT NULL,
+        "author_id" UUID NOT NULL REFERENCES "users",
+        "path_id" UUID NOT NULL REFERENCES "paths",
+        "view_permission_key" UUID NOT NULL REFERENCES "permissions",
+        "comment_permission_key" UUID NOT NULL REFERENCES "permissions",
+        "edit_permission_key" UUID NOT NULL REFERENCES "permissions",
+        "commentable" BOOLEAN NOT NULL DEFAULT false,
         "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
         "created" TIMESTAMP NOT NULL DEFAULT NOW(),
         "deleted" TIMESTAMP
@@ -62,10 +73,10 @@ CREATE TABLE
 
 CREATE TABLE
     "pages" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "content_id" VARCHAR(40) REFERENCES "paths",
-        "title" VARCHAR,
-        "body" VARCHAR,
+        "id" UUID PRIMARY KEY,
+        "content_id" UUID NOT NULL REFERENCES "content",
+        "title" VARCHAR NOT NULL,
+        "body" VARCHAR NOT NULL,
         "publish_at" TIMESTAMP,
         "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
         "created" TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -74,11 +85,10 @@ CREATE TABLE
 
 CREATE TABLE
     "files" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "content_id" VARCHAR(40) REFERENCES "content",
-        "name" VARCHAR,
-        "extension" VARCHAR,
-        "location" VARCHAR,
+        "id" UUID PRIMARY KEY,
+        "content_id" UUID NOT NULL REFERENCES "content",
+        "name" VARCHAR NOT NULL,
+        "extension" VARCHAR NOT NULL,
         "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
         "created" TIMESTAMP NOT NULL DEFAULT NOW(),
         "deleted" TIMESTAMP
@@ -86,9 +96,9 @@ CREATE TABLE
 
 CREATE TABLE
     "sets" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "content_id" VARCHAR(40) REFERENCES "content",
-        "name" VARCHAR,
+        "id" UUID PRIMARY KEY,
+        "content_id" UUID NOT NULL REFERENCES "content",
+        "name" VARCHAR NOT NULL,
         "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
         "created" TIMESTAMP NOT NULL DEFAULT NOW(),
         "deleted" TIMESTAMP
@@ -96,21 +106,10 @@ CREATE TABLE
 
 CREATE TABLE
     "content_references" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "referencer_id" VARCHAR(40) REFERENCES "content",
-        "referencing_id" VARCHAR(40) REFERENCES "content",
-        "type" content_reference_type,
-        "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
-        "created" TIMESTAMP NOT NULL DEFAULT NOW(),
-        "deleted" TIMESTAMP
-    );
-
-CREATE TABLE
-    "paths" (
-        "id" VARCHAR(40) PRIMARY KEY,
-        "parent" VARCHAR(40) REFERENCES "paths",
-        "slug" VARCHAR,
-        "type" path_type DEFAULT 'path_type.misc',
+        "id" UUID PRIMARY KEY,
+        "referencer_id" UUID NOT NULL REFERENCES "content",
+        "referencing_id" UUID NOT NULL REFERENCES "content",
+        "type" content_reference_type NOT NULL,
         "modified" TIMESTAMP NOT NULL DEFAULT NOW(),
         "created" TIMESTAMP NOT NULL DEFAULT NOW(),
         "deleted" TIMESTAMP
@@ -138,31 +137,31 @@ END;
 $$ LANGUAGE plpgsql;
 
 SELECT
-    manage_modified ("users");
+    manage_modified ('"users"');
 
 SELECT
-    manage_modified ("roles");
+    manage_modified ('"roles"');
 
 SELECT
-    manage_modified ("role_permissions");
+    manage_modified ('"role_permissions"');
 
 SELECT
-    manage_modified ("permissions");
+    manage_modified ('"permissions"');
 
 SELECT
-    manage_modified ("content");
+    manage_modified ('"content"');
 
 SELECT
-    manage_modified ("pages");
+    manage_modified ('"pages"');
 
 SELECT
-    manage_modified ("files");
+    manage_modified ('"files"');
 
 SELECT
-    manage_modified ("sets");
+    manage_modified ('"sets"');
 
 SELECT
-    manage_modified ("content_references");
+    manage_modified ('"content_references"');
 
 SELECT
-    manage_modified ("paths");
+    manage_modified ('"paths"');

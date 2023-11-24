@@ -16,9 +16,10 @@ async fn axum(
     _pool: PgPool,
     #[shuttle_secrets::Secrets] _secret_store: SecretStore,
 ) -> shuttle_axum::ShuttleAxum {
-    let router = Router::new()
-        .route("/", get(hello_world))
-        .nest_service("/static", ServeDir::new(PathBuf::from("assets")));
+    let router = Router::new().route("/", get(hello_world)).nest_service(
+        "/srcms-server/static",
+        ServeDir::new(PathBuf::from("assets")),
+    );
 
     Ok(router.into())
 }
