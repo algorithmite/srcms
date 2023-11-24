@@ -13,6 +13,7 @@ struct User {
     hash: String,
     modified: DateTime<Utc>,
     created: DateTime<Utc>,
+    deleted: Option<DateTime<Utc>>,
 }
 
 impl PartialEq for User {
@@ -21,23 +22,11 @@ impl PartialEq for User {
     }
 }
 
-impl PartialOrd for User {
-    fn partial_cmp(&self, other: &Self) -> std::option::Option<std::cmp::Ordering> {
-        Some(self.id.cmp(&other.id))
-    }
-}
-
-impl Ord for User {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.id.cmp(&other.id)
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 struct NewUser {
-    role_id: Uuid,
+    role_id: Option<Uuid>,
     email: String,
     username: String,
     auth_token: Option<String>,
-    hash: String,
+    unhashed: String,
 }

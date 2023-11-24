@@ -7,6 +7,8 @@ edition = "2021"
 
 srcms-macros = { path = "../srcms-macros" }
 
+axum = "0.6"
+
 serde = { version = "1.0", features = ["derive"] }
 sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres"] }
 
@@ -17,9 +19,9 @@ features = [
 ]
 
 [dependencies.uuid]
-version = "1.4"
+version = "1.6"
 features = [
-    "v4",
+    "v7",
     "fast-rng",
     "serde",
 ]
